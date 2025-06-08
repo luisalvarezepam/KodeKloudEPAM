@@ -1,5 +1,16 @@
 import { useEffect, useState } from 'react';
 import * as XLSX from 'xlsx';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from 'recharts';
+
+const COLORS = ['#4ade80', '#60a5fa', '#facc15', '#f87171', '#a78bfa'];
 
 export default function KodeKloudDashboard() {
   const [data, setData] = useState([]);
@@ -56,6 +67,21 @@ export default function KodeKloudDashboard() {
     XLSX.writeFile(wb, 'kodekloud_usage.xlsx');
   };
 
+  const getTopLessons = (dataset, program = null) => {
+    return dataset
+      .filter(u => (program ? u.Program === program : true))
+      .sort((a, b) => b['Lessons Completed'] - a['Lessons Completed'])
+      .slice(0, 5)
+      .map(u => ({ name: u.Name, value: u['Lessons Completed'] }));
+  };
+
+  const charts = [
+    { title: 'Top 5 Users by Lessons', data: getTopLessons(data) },
+    { title: 'Top 5 in XPORT1-MX', data: getTopLessons(data, 'XPORT1-MX') },
+    { title: 'Top 5 in XPORT2-MX', data: getTopLessons(data, 'XPORT2-MX') },
+    { title: 'Top 5 in MXEPAMGOOGLE', data: getTopLessons(data, 'MXEPAMGOOGLE') },
+  ];
+
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4 flex flex-col justify-between">
       <div>
@@ -93,6 +119,23 @@ export default function KodeKloudDashboard() {
             </select>
           </div>
         </section>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          {charts.map((chart, index) => (
+            <section key={index} className="bg-gray-800 p-6 rounded-md shadow">
+              <h2 className="text-lg font-bold mb-4">{chart.title}</h2>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={chart.data} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis type="number" />
+                  <YAxis type="category" dataKey="name" width={150} />
+                  <Tooltip />
+                  <Bar dataKey="value" fill="#60a5fa" />
+                </BarChart>
+              </ResponsiveContainer>
+            </section>
+          ))}
+        </div>
 
         <div className="overflow-x-auto">
           <table className="min-w-full table-auto divide-y divide-gray-600">
