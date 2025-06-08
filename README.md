@@ -1,150 +1,80 @@
 # KodeKloud License Dashboard
 
-This project is a **React + Vite** frontend built to display KodeKloud license usage across programs and users, with interactive filters, charts, and export features.
+A modern and responsive dashboard built with **React** and **Tailwind CSS v3**, designed to monitor the usage of KodeKloud technology training licenses across different programs. It provides insights into active users, lessons completed, video hours watched, and more.
 
----
+## 🌟 Features
 
-## ✨ Features
+- 📊 **Dynamic data dashboard** from uploaded JSON
+- 📈 Summary Cards with usage metrics
+- 🧠 Top 5 users per program by lessons completed (bar charts)
+- ✅ Filters: all, active, inactive, and name search
+- 📥 Export filtered view to Excel
+- 🔁 Upload JSON data manually
+- 🌗 Toggle between **Light Mode** and **Dark Mode**
+- 📱 Fully responsive interface
 
-- Displays license usage for 40 seats
-- Filters by active/inactive users
-- Sorts by Name, Program, or Video Hours Watched
-- Search by Name
-- Upload new JSON reports manually
-- Export filtered data to Excel
-- Four charts: Top 5 users by lessons completed overall and per program
-- Highlighting of users with no activity or no accepted license
+## 🚀 Live Site
 
----
+Hosted on **Azure Static Web Apps**:
+👉 [https://delightful-water-0ae8bed0f.6.azurestaticapps.net](https://delightful-water-0ae8bed0f.6.azurestaticapps.net)
 
-## 🎓 Data Structure
+## 📦 Project Setup
 
-The app expects a JSON file placed at:
+```bash
+# Clone the repository
+https://github.com/luisalvarezepam/KodeKloudEPAM.git
 
+# Navigate into the project
+cd KodeKloudEPAM
+
+# Install dependencies
+npm install
+
+# Start local development
+npm run dev
 ```
-public/data/kodekloud_data.json
+
+## 📁 File Structure
+
+- `src/KodeKloudDashboard.jsx` — Core UI & logic
+- `public/data/kodekloud_data.json` — Main data source (can be updated weekly via script)
+
+## 🧪 JSON File Format
+The JSON file must contain:
+```json
+[
+  {
+    "Name": "John Doe",
+    "Email": "john@example.com",
+    "Lessons Completed": 5,
+    "Video Hours Watched": 4.5,
+    "Labs Completed": 2,
+    "Program": "XPORT1-MX",
+    "License Accepted": "✓",
+    "Status": "Active"
+  },
+  ...
+]
 ```
 
-Each user record must contain:
-
-- `Name`
-- `Email`
-- `Lessons Completed`
-- `Video Hours Watched`
-- `Labs Completed`
-- `Program`
-- `License Accepted` ("✓" or "X")
-- `Status` (e.g. "No activity or progress")
-
----
-
-## ⚖️ Backend Script (Python)
-
-Use the `generate_report.py` script to generate both the Excel report and the `kodekloud_data.json` file.
-
-### Run it like:
+## ⚙️ Automated Report Generation
+Use the accompanying Python script to merge data from two Excel files (`KodeKloud2025Admin.xlsx` and `activity_leaderboard.xlsx`) and generate:
+- `kodekloud_data.json`
+- `kodekloud_report.xlsx`
 
 ```bash
 python generate_report.py KodeKloud2025Admin.xlsx activity_leaderboard.xlsx
 ```
 
-It will output:
+## 🔄 CI/CD with Azure
+This project is deployed via Azure Static Web Apps and connected to GitHub:
+- Every `push` to `main` branch triggers an automatic deployment.
 
-- `kodekloud_report.xlsx`
-- `kodekloud_data.json`
-
----
-
-## 🚀 Deploy to Azure Static Web Apps
-
-### 1. Choose Azure Static Web Apps
-
-- Ideal for Vite/React sites
-- Built-in GitHub Actions CI/CD
-
-### 2. Steps:
-
-1. Go to Azure Portal > **Static Web Apps** > Create
-2. Link your GitHub repo: `luisalvarezepam/KodeKloudEPAM`
-3. Choose Build Preset: **Vite**
-4. App location: `/`, Output location: `dist`
-5. Deploy
-
-### 3. GitHub Actions Workflow
-
-Place this YAML file in your repo at `.github/workflows/azure-static-webapps-deploy.yml`:
-
-```yaml
-name: Azure Static Web Apps CI/CD
-
-on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
-
-jobs:
-  build_and_deploy:
-    runs-on: ubuntu-latest
-    name: Build and Deploy Job
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build project
-        run: npm run build
-
-      - name: Deploy to Azure Static Web Apps
-        uses: Azure/static-web-apps-deploy@v1
-        with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          action: "upload"
-          app_location: "/"
-          output_location: "dist"
-```
-
-### 4. Make sure this is in `vite.config.js`
-
-```js
-export default defineConfig({
-  base: './',
-  plugins: [react()],
-});
-```
+## ✨ To Do (Next Steps)
+- Add backend API to fetch protected JSON
+- Add role-based access (Admin/User views)
+- Notifications for inactive users
 
 ---
 
-## 📁 Folder Structure
-
-```
-/public
-  /data/kodekloud_data.json
-  favicon.ico
-/src
-  App.jsx
-  KodeKloudDashboard.jsx
-  index.css
-/vite.config.js
-```
-
----
-
-## 📅 Author
-
-**Luis Alvarez**  
-Email: `luis_alvarez1@epam.com`
-
----
-
-## ❤️ License
-
-MIT
+📬 For questions or feedback, contact: **Luis Alvarez** – luis_alvarez1@epam.com
