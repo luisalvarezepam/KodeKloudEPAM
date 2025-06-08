@@ -1,12 +1,106 @@
-# React + Vite
+KodeKloud License Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project is a React + Vite frontend built to display KodeKloud license usage across programs and users, with interactive filters, charts, and export features.
 
-Currently, two official plugins are available:
+✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Displays license usage for 40 seats
 
-## Expanding the ESLint configuration change
+Filters by active/inactive users
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Sorts by Name, Program, or Video Hours Watched
+
+Search by Name
+
+Upload new JSON reports manually
+
+Export filtered data to Excel
+
+Four charts: Top 5 users by lessons completed overall and per program
+
+Highlighting of users with no activity or no accepted license
+
+🎓 Data Structure
+
+The app expects a JSON file placed at:
+
+public/data/kodekloud_data.json
+
+Each user record must contain:
+
+Name
+
+Email
+
+Lessons Completed
+
+Video Hours Watched
+
+Labs Completed
+
+Program
+
+License Accepted ("✓" or "X")
+
+Status (e.g. "No activity or progress")
+
+⚖️ Backend Script (Python)
+
+Use the generate_report.py script to generate both the Excel report and the kodekloud_data.json file.
+
+Run it like:
+
+python generate_report.py KodeKloud2025Admin.xlsx activity_leaderboard.xlsx
+
+It will output:
+
+kodekloud_report.xlsx
+
+kodekloud_data.json
+
+🚀 Deploy to Azure Static Web Apps
+
+1. Choose Azure Static Web Apps
+
+Ideal for Vite/React sites
+
+Built-in GitHub Actions CI/CD
+
+2. Steps:
+
+Go to Azure Portal > Static Web Apps > Create
+
+Link your GitHub repo: luisalvarezepam/KodeKloudEPAM
+
+Choose Build Preset: Vite
+
+App location: /, Output location: dist
+
+Deploy
+
+3. Make sure this is in vite.config.js
+
+export default defineConfig({
+  base: './',
+  plugins: [react()],
+});
+
+📁 Folder Structure
+
+/public
+  /data/kodekloud_data.json
+  favicon.ico
+/src
+  App.jsx
+  KodeKloudDashboard.jsx
+  index.css
+/vite.config.js
+
+📅 Author
+
+Luis AlvarezEmail: luis_alvarez1@epam.com
+
+❤️ License
+
+MIT
+
