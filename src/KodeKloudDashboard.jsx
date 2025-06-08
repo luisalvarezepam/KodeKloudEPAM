@@ -112,6 +112,7 @@ export default function KodeKloudDashboard() {
 
   const themeClasses = darkMode ? 'bg-gray-900 text-white' : 'bg-white text-gray-900';
   const cardTheme = darkMode ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-900';
+  const cardTitle = darkMode ? 'text-xl font-bold text-white' : 'text-xl font-bold text-gray-900';
   const chartTheme = darkMode ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900';
   const tableTheme = darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200';
   const inputTheme = darkMode ? 'bg-gray-800 text-white border-gray-600' : 'bg-white text-black border-gray-300';
@@ -151,20 +152,20 @@ export default function KodeKloudDashboard() {
 
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className={`p-4 rounded-lg shadow hover:shadow-lg ${cardTheme}`}>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Total Users</p>
-          <p className="text-2xl font-bold">{filteredAll.length}</p>
+          <p className={`${cardTitle}`}>Total Users</p>
+          <p className="text-3xl font-bold">{filteredAll.length}</p>
         </div>
         <div className={`p-4 rounded-lg shadow hover:shadow-lg ${cardTheme}`}>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Active Licenses</p>
-          <p className="text-2xl font-bold">{activeCount} / {licenseLimit}</p>
+          <p className={`${cardTitle}`}>Active Licenses</p>
+          <p className="text-3xl font-bold">{activeCount} / {licenseLimit}</p>
         </div>
         <div className={`p-4 rounded-lg shadow hover:shadow-lg ${cardTheme}`}>
-          <p className="text-sm text-gray-500 dark:text-gray-400">No Progress</p>
-          <p className="text-2xl font-bold text-red-600 dark:text-red-400">{noActivityCount}</p>
+          <p className={`${cardTitle}`}>No Progress</p>
+          <p className="text-3xl font-bold text-red-600 dark:text-red-400">{noActivityCount}</p>
         </div>
         <div className={`p-4 rounded-lg shadow hover:shadow-lg ${cardTheme}`}>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Avg. Video Hours</p>
-          <p className="text-2xl font-bold">{averageVideoHours}</p>
+          <p className={`${cardTitle}`}>Avg. Video Hours</p>
+          <p className="text-3xl font-bold">{averageVideoHours}</p>
         </div>
       </section>
 
@@ -226,6 +227,10 @@ export default function KodeKloudDashboard() {
           </tbody>
         </table>
       </div>
+
+      <footer className="text-center mt-8 p-4 text-sm text-gray-500 border-t border-gray-300">
+        Portal created by Luis Alvarez (luis_alvarez1@epam.com)
+      </footer>
     </div>
   );
 }
