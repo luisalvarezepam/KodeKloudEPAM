@@ -26,7 +26,7 @@ export default function KodeKloudDashboard() {
         const json = JSON.parse(e.target.result);
         setData(json);
       } catch (err) {
-        alert('Archivo JSON inválido');
+        alert('Invalid JSON file');
       }
     };
     reader.readAsText(file);
@@ -57,88 +57,94 @@ export default function KodeKloudDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-4">
-      <header className="bg-blue-800 p-6 rounded-md shadow mb-6 flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Uso de Licencias - KodeKloud</h1>
-        <div className="text-sm text-white">Última actualización: {new Date().toLocaleDateString()}</div>
-      </header>
+    <div className="min-h-screen bg-gray-900 text-white p-4 flex flex-col justify-between">
+      <div>
+        <header className="bg-blue-800 p-6 rounded-md shadow mb-6 flex justify-between items-center">
+          <h1 className="text-2xl font-bold">License Usage - KodeKloud</h1>
+          <div className="text-sm text-white">Last updated: {new Date().toLocaleDateString()}</div>
+        </header>
 
-      <section className="bg-gray-800 p-6 rounded-md shadow mb-6">
-        <p className="text-xl mb-4">
-          Licencias activas en uso:{' '}
-          <span className="font-bold text-green-400">{activeCount}</span> / {licenseLimit}
-        </p>
-        <div className="space-x-2 mb-2 flex flex-wrap gap-2">
-          <button onClick={() => setFilter('all')} className="bg-white text-gray-900 px-3 py-1 rounded hover:bg-blue-200">Todos</button>
-          <button onClick={() => setFilter('active')} className="bg-white text-gray-900 px-3 py-1 rounded hover:bg-blue-200">Activos</button>
-          <button onClick={() => setFilter('inactive')} className="bg-white text-gray-900 px-3 py-1 rounded hover:bg-blue-200">Inactivos</button>
-          <button onClick={exportToExcel} className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">Exportar a Excel</button>
-          <label className="bg-yellow-500 text-black px-3 py-1 rounded cursor-pointer">
-            Subir JSON
-            <input type="file" accept=".json" onChange={handleFileUpload} className="hidden" />
-          </label>
-          <input
-            type="text"
-            placeholder="Buscar por nombre..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="text-black px-2 py-1 rounded"
-          />
-          <label>Ordenar por:</label>
-          <select onChange={e => setSortKey(e.target.value)} className="text-black px-2 py-1 rounded">
-            <option value="Video Hours Watched">Horas Video</option>
-            <option value="Name">Nombre</option>
-            <option value="Program">Programa</option>
-          </select>
+        <section className="bg-gray-800 p-6 rounded-md shadow mb-6">
+          <p className="text-xl mb-4">
+            Active licenses in use:{' '}
+            <span className="font-bold text-green-400">{activeCount}</span> / {licenseLimit}
+          </p>
+          <div className="space-x-2 mb-2 flex flex-wrap gap-2">
+            <button onClick={() => setFilter('all')} className="bg-white text-gray-900 px-3 py-1 rounded hover:bg-blue-200">All</button>
+            <button onClick={() => setFilter('active')} className="bg-white text-gray-900 px-3 py-1 rounded hover:bg-blue-200">Active</button>
+            <button onClick={() => setFilter('inactive')} className="bg-white text-gray-900 px-3 py-1 rounded hover:bg-blue-200">Inactive</button>
+            <button onClick={exportToExcel} className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">Export to Excel</button>
+            <label className="bg-yellow-500 text-black px-3 py-1 rounded cursor-pointer">
+              Upload JSON
+              <input type="file" accept=".json" onChange={handleFileUpload} className="hidden" />
+            </label>
+            <input
+              type="text"
+              placeholder="Search by name..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="text-black px-2 py-1 rounded"
+            />
+            <label>Sort by:</label>
+            <select onChange={e => setSortKey(e.target.value)} className="text-black px-2 py-1 rounded">
+              <option value="Video Hours Watched">Video Hours</option>
+              <option value="Name">Name</option>
+              <option value="Program">Program</option>
+            </select>
+          </div>
+        </section>
+
+        <div className="overflow-x-auto">
+          <table className="min-w-full table-auto divide-y divide-gray-600">
+            <thead className="bg-blue-800 text-white">
+              <tr>
+                <th className="px-4 py-2">Name</th>
+                <th className="px-4 py-2">Email</th>
+                <th className="px-4 py-2">Lessons</th>
+                <th className="px-4 py-2">Video Hours</th>
+                <th className="px-4 py-2">Labs</th>
+                <th className="px-4 py-2">Program</th>
+                <th className="px-4 py-2">Active</th>
+                <th className="px-4 py-2">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((u, i) => {
+                const noActivity = u['Lessons Completed'] === 0 && u['Video Hours Watched'] === 0 && u['Labs Completed'] === 0;
+                return (
+                  <tr
+                    key={i}
+                    className={
+                      noActivity
+                        ? 'bg-red-100 text-red-900'
+                        : !isActive(u)
+                        ? 'bg-orange-100 text-orange-900'
+                        : i % 2 === 0
+                        ? 'bg-gray-800'
+                        : 'bg-gray-700'
+                    }
+                  >
+                    <td className="px-4 py-2 whitespace-nowrap">{u.Name}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{u.Email}</td>
+                    <td className="px-4 py-2 text-center">{u['Lessons Completed']}</td>
+                    <td className="px-4 py-2 text-center">{u['Video Hours Watched']}</td>
+                    <td className="px-4 py-2 text-center">{u['Labs Completed']}</td>
+                    <td className="px-4 py-2 text-center">{u.Program}</td>
+                    <td className="px-4 py-2 text-center">{isActive(u) ? '✔️' : '❌'}</td>
+                    <td className="px-4 py-2 text-center">
+                      {noActivity ? 'No activity or progress' : u.Status || '-'}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
-      </section>
-
-      <div className="overflow-x-auto">
-        <table className="min-w-full table-auto divide-y divide-gray-600">
-          <thead className="bg-blue-800 text-white">
-            <tr>
-              <th className="px-4 py-2">Nombre</th>
-              <th className="px-4 py-2">Email</th>
-              <th className="px-4 py-2">Lessons</th>
-              <th className="px-4 py-2">Horas Video</th>
-              <th className="px-4 py-2">Labs</th>
-              <th className="px-4 py-2">Programa</th>
-              <th className="px-4 py-2">Activo</th>
-              <th className="px-4 py-2">Estatus</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((u, i) => {
-              const noActivity = u['Lessons Completed'] === 0 && u['Video Hours Watched'] === 0 && u['Labs Completed'] === 0;
-              return (
-                <tr
-                  key={i}
-                  className={
-                    noActivity
-                      ? 'bg-red-100 text-red-900'
-                      : !isActive(u)
-                      ? 'bg-orange-100 text-orange-900'
-                      : i % 2 === 0
-                      ? 'bg-gray-800'
-                      : 'bg-gray-700'
-                  }
-                >
-                  <td className="px-4 py-2 whitespace-nowrap">{u.Name}</td>
-                  <td className="px-4 py-2 whitespace-nowrap">{u.Email}</td>
-                  <td className="px-4 py-2 text-center">{u['Lessons Completed']}</td>
-                  <td className="px-4 py-2 text-center">{u['Video Hours Watched']}</td>
-                  <td className="px-4 py-2 text-center">{u['Labs Completed']}</td>
-                  <td className="px-4 py-2 text-center">{u.Program}</td>
-                  <td className="px-4 py-2 text-center">{isActive(u) ? '✔️' : '❌'}</td>
-                  <td className="px-4 py-2 text-center">
-                    {noActivity ? 'No activity or progress' : u.Status || '-'}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
       </div>
+
+      <footer className="text-center mt-8 p-4 text-sm text-gray-400 border-t border-gray-700">
+        Portal created by Luis Alvarez (luis_alvarez1@epam.com)
+      </footer>
     </div>
   );
 }
