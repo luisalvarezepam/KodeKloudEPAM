@@ -7,16 +7,15 @@ export default function KodeKloudDashboard() {
   const licenseLimit = 40;
 
   useEffect(() => {
-    fetch('/data/kodekloud_dashboard_final.json')
+    fetch('/data/kodekloud_data.json')
       .then(res => res.json())
       .then(setData);
   }, []);
 
   const normalize = val => String(val).trim().toLowerCase();
-  const isActive = user => normalize(user['License Accepted']) === 'yes';
+  const isActive = user => normalize(user['License Accepted']) === '✓';
 
-  const filteredAll = data.filter(user => user.Program !== 'LPC');
-  const sorted = [...filteredAll].sort(
+  const sorted = [...data].sort(
     (a, b) => b['Video Hours Watched'] - a['Video Hours Watched']
   );
 
@@ -26,7 +25,7 @@ export default function KodeKloudDashboard() {
     return true;
   });
 
-  const activeCount = filteredAll.filter(isActive).length;
+  const activeCount = data.filter(isActive).length;
 
   const exportToExcel = () => {
     const ws = XLSX.utils.json_to_sheet(filtered);
@@ -74,31 +73,38 @@ export default function KodeKloudDashboard() {
               <th className="px-4 py-2">Labs</th>
               <th className="px-4 py-2">Programa</th>
               <th className="px-4 py-2">Activo</th>
+              <th className="px-4 py-2">Estatus</th>
             </tr>
           </thead>
           <tbody>
-            {filtered.map((u, i) => (
-              <tr
-                key={i}
-                className={
-                  !isActive(u)
-                    ? 'bg-red-100 text-red-900'
-                    : i % 2 === 0
-                    ? 'bg-gray-800'
-                    : 'bg-gray-700'
-                }
-              >
-                <td className="px-4 py-2 whitespace-nowrap">{u.Name}</td>
-                <td className="px-4 py-2 whitespace-nowrap">{u.Email}</td>
-                <td className="px-4 py-2 text-center">{u['Lessons Completed']}</td>
-                <td className="px-4 py-2 text-center">{u['Video Hours Watched']}</td>
-                <td className="px-4 py-2 text-center">{u['Labs Completed']}</td>
-                <td className="px-4 py-2 text-center">{u.Program}</td>
-                <td className="px-4 py-2 text-center">
-                  {isActive(u) ? '✔️' : '❌'}
-                </td>
-              </tr>
-            ))}
+            {filtered.map((u, i) => {
+              const noActivity = u['Lessons Completed'] === 0 && u['Video Hours Watched'] === 0 && u['Labs Completed'] === 0;
+              return (
+                <tr
+                  key={i}
+                  className={
+                    noActivity
+                      ? 'bg-red-100 text-red-900'
+                      : !isActive(u)
+                      ? 'bg-orange-100 text-orange-900'
+                      : i % 2 === 0
+                      ? 'bg-gray-800'
+                      : 'bg-gray-700'
+                  }
+                >
+                  <td className="px-4 py-2 whitespace-nowrap">{u.Name}</td>
+                  <td className="px-4 py-2 whitespace-nowrap">{u.Email}</td>
+                  <td className="px-4 py-2 text-center">{u['Lessons Completed']}</td>
+                  <td className="px-4 py-2 text-center">{u['Video Hours Watched']}</td>
+                  <td className="px-4 py-2 text-center">{u['Labs Completed']}</td>
+                  <td className="px-4 py-2 text-center">{u.Program}</td>
+                  <td className="px-4 py-2 text-center">{isActive(u) ? '✔️' : '❌'}</td>
+                  <td className="px-4 py-2 text-center">
+                    {noActivity ? 'No activity or progress' : u.Status || '-'}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
