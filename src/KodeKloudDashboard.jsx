@@ -4,6 +4,8 @@ import * as XLSX from 'xlsx';
 export default function KodeKloudDashboard() {
   const [data, setData] = useState([]);
   const [filter, setFilter] = useState('all');
+  const [sortKey, setSortKey] = useState('Video Hours Watched');
+  const [search, setSearch] = useState('');
   const licenseLimit = 40;
 
   useEffect(() => {
@@ -15,13 +17,33 @@ export default function KodeKloudDashboard() {
   const normalize = val => String(val).trim().toLowerCase();
   const isActive = user => normalize(user['License Accepted']) === '✓';
 
-  const sorted = [...data].sort(
-    (a, b) => b['Video Hours Watched'] - a['Video Hours Watched']
-  );
+  const handleFileUpload = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const json = JSON.parse(e.target.result);
+        setData(json);
+      } catch (err) {
+        alert('Archivo JSON inválido');
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const sorted = [...data].sort((a, b) => {
+    if (sortKey === 'Name' || sortKey === 'Program') {
+      return String(a[sortKey]).localeCompare(String(b[sortKey]));
+    }
+    return (b[sortKey] || 0) - (a[sortKey] || 0);
+  });
 
   const filtered = sorted.filter(user => {
-    if (filter === 'active') return isActive(user);
-    if (filter === 'inactive') return !isActive(user);
+    const noActivity = user['Lessons Completed'] === 0 && user['Video Hours Watched'] === 0 && user['Labs Completed'] === 0;
+    if (filter === 'active' && !isActive(user)) return false;
+    if (filter === 'inactive' && isActive(user) && !noActivity) return false;
+    if (search && !user.Name.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
 
@@ -46,19 +68,28 @@ export default function KodeKloudDashboard() {
           Licencias activas en uso:{' '}
           <span className="font-bold text-green-400">{activeCount}</span> / {licenseLimit}
         </p>
-        <div className="space-x-2">
-          <button onClick={() => setFilter('all')} className="bg-white text-gray-900 px-3 py-1 rounded hover:bg-blue-200">
-            Todos
-          </button>
-          <button onClick={() => setFilter('active')} className="bg-white text-gray-900 px-3 py-1 rounded hover:bg-blue-200">
-            Activos
-          </button>
-          <button onClick={() => setFilter('inactive')} className="bg-white text-gray-900 px-3 py-1 rounded hover:bg-blue-200">
-            Inactivos
-          </button>
-          <button onClick={exportToExcel} className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">
-            Exportar a Excel
-          </button>
+        <div className="space-x-2 mb-2 flex flex-wrap gap-2">
+          <button onClick={() => setFilter('all')} className="bg-white text-gray-900 px-3 py-1 rounded hover:bg-blue-200">Todos</button>
+          <button onClick={() => setFilter('active')} className="bg-white text-gray-900 px-3 py-1 rounded hover:bg-blue-200">Activos</button>
+          <button onClick={() => setFilter('inactive')} className="bg-white text-gray-900 px-3 py-1 rounded hover:bg-blue-200">Inactivos</button>
+          <button onClick={exportToExcel} className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">Exportar a Excel</button>
+          <label className="bg-yellow-500 text-black px-3 py-1 rounded cursor-pointer">
+            Subir JSON
+            <input type="file" accept=".json" onChange={handleFileUpload} className="hidden" />
+          </label>
+          <input
+            type="text"
+            placeholder="Buscar por nombre..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="text-black px-2 py-1 rounded"
+          />
+          <label>Ordenar por:</label>
+          <select onChange={e => setSortKey(e.target.value)} className="text-black px-2 py-1 rounded">
+            <option value="Video Hours Watched">Horas Video</option>
+            <option value="Name">Nombre</option>
+            <option value="Program">Programa</option>
+          </select>
         </div>
       </section>
 
