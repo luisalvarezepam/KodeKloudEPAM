@@ -1,80 +1,61 @@
-# KodeKloud License Dashboard
 
-A modern and responsive dashboard built with **React** and **Tailwind CSS v3**, designed to monitor the usage of KodeKloud technology training licenses across different programs. It provides insights into active users, lessons completed, video hours watched, and more.
+# KodeKloud License Report Dashboard
 
-## 🌟 Features
+![Architecture Diagram](docs/architecture-diagram.png)
 
-- 📊 **Dynamic data dashboard** from uploaded JSON
-- 📈 Summary Cards with usage metrics
-- 🧠 Top 5 users per program by lessons completed (bar charts)
-- ✅ Filters: all, active, inactive, and name search
-- 📥 Export filtered view to Excel
-- 🔁 Upload JSON data manually
-- 🌗 Toggle between **Light Mode** and **Dark Mode**
-- 📱 Fully responsive interface
+This project implements an automated solution to generate visual reports from Excel files containing KodeKloud license information.
 
-## 🚀 Live Site
+## 📌 Main Functionality
 
-Hosted on **Azure Static Web Apps**:
-👉 [https://delightful-water-0ae8bed0f.6.azurestaticapps.net](https://delightful-water-0ae8bed0f.6.azurestaticapps.net)
+- Reads `KodeKloudAdmin.xlsx` and `activity_leaderboard.xlsx` files from Azure Blob Storage.
+- Processes them using Python and Pandas to merge, clean, and analyze the data.
+- Generates a JSON file with the enriched data.
+- Automatically deploys the portal to Azure Static Web Apps.
 
-## 📦 Project Setup
+## ⚙️ Architecture
 
-```bash
-# Clone the repository
-https://github.com/luisalvarezepam/KodeKloudEPAM.git
+1. **Azure Blob Storage**: Stores the source Excel files.
+2. **GitHub Actions**: Runs a pipeline that:
+   - Downloads files from Blob Storage.
+   - Runs the `generate_report.py` script to create the JSON.
+   - Commits and pushes the new JSON to `public/data/kodekloud_data.json`.
+   - Automatically deploys to Azure Static Web Apps.
+3. **React Frontend (Vite)**: Displays the JSON data in a responsive and filterable dashboard.
 
-# Navigate into the project
-cd KodeKloudEPAM
+## 📁 Repository Structure
 
-# Install dependencies
-npm install
-
-# Start local development
-npm run dev
+```
+KodeKloudEPAM/
+├── backend/                     # Azure Function and Python script
+│   └── generate_report.py
+├── public/
+│   └── data/
+│       └── kodekloud_data.json  # Automatically generated file
+├── src/                         # React frontend
+│   └── KodeKloudDashboard.jsx
+├── .github/workflows/
+│   ├── generate-report.yml      # Generates and updates the JSON
+│   └── azure-static-web-apps-*.yml # Deploys the site
+├── README.md
+└── docs/
+    └── architecture-diagram.png
 ```
 
-## 📁 File Structure
+## 🚀 How the Pipeline Works
 
-- `src/KodeKloudDashboard.jsx` — Core UI & logic
-- `public/data/kodekloud_data.json` — Main data source (can be updated weekly via script)
+1. You can manually trigger it from the **Actions** tab.
+2. The `generate-report.yml` workflow:
+   - Installs Python dependencies.
+   - Generates the JSON from the files in Azure Blob.
+   - Commits and pushes the JSON to the repository.
+3. The `azure-static-web-apps-*.yml` workflow:
+   - Detects the change in `main`.
+   - Builds the frontend and deploys it to Azure.
 
-## 🧪 JSON File Format
-The JSON file must contain:
-```json
-[
-  {
-    "Name": "John Doe",
-    "Email": "john@example.com",
-    "Lessons Completed": 5,
-    "Video Hours Watched": 4.5,
-    "Labs Completed": 2,
-    "Program": "XPORT1-MX",
-    "License Accepted": "✓",
-    "Status": "Active"
-  },
-  ...
-]
-```
+## 🖥️ Access
 
-## ⚙️ Automated Report Generation
-Use the accompanying Python script to merge data from two Excel files (`KodeKloud2025Admin.xlsx` and `activity_leaderboard.xlsx`) and generate:
-- `kodekloud_data.json`
-- `kodekloud_report.xlsx`
+The portal is available at: [https://delightful-water-0ae8bed0f.6.azurestaticapps.net](https://delightful-water-0ae8bed0f.6.azurestaticapps.net)
 
-```bash
-python generate_report.py KodeKloud2025Admin.xlsx activity_leaderboard.xlsx
-```
+## 🧾 Credits
 
-## 🔄 CI/CD with Azure
-This project is deployed via Azure Static Web Apps and connected to GitHub:
-- Every `push` to `main` branch triggers an automatic deployment.
-
-## ✨ To Do (Next Steps)
-- Add backend API to fetch protected JSON
-- Add role-based access (Admin/User views)
-- Notifications for inactive users
-
----
-
-📬 For questions or feedback, contact: **Luis Alvarez** – luis_alvarez1@epam.com
+Developed by Luis Alvarez – EPAM Systems.
