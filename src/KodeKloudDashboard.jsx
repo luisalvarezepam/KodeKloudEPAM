@@ -41,31 +41,6 @@ export default function KodeKloudDashboard() {
   const isActive = user => normalize(user['License Accepted']) === '✓';
   const isNoActivity = user => normalize(user['Status']) === 'no activity or progress';
 
-  const handleFileUpload = e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = e => {
-      try {
-        const json = JSON.parse(e.target.result);
-        const enriched = json.map(u => {
-          const noActivity =
-            (u['Lessons Completed'] === 0 || u['Lessons Completed'] === '0') &&
-            (u['Video Hours Watched'] === 0 || u['Video Hours Watched'] === '0') &&
-            (u['Labs Completed'] === 0 || u['Labs Completed'] === '0');
-          return {
-            ...u,
-            Status: noActivity ? 'No activity or progress' : u.Status || '-',
-          };
-        });
-        setData(enriched);
-      } catch (err) {
-        alert('Invalid JSON file');
-      }
-    };
-    reader.readAsText(file);
-  };
-
   const filteredAll = data.filter(user => user.Program !== 'LPC');
   const sorted = [...filteredAll].sort((a, b) => {
     if (sortKey === 'Name' || sortKey === 'Program') {
@@ -112,7 +87,7 @@ export default function KodeKloudDashboard() {
 
   const themeClasses = darkMode ? 'bg-gray-900 text-white' : 'bg-white text-gray-900';
   const cardTheme = darkMode ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-900';
-  const cardTitle = darkMode ? 'text-xl font-bold text-white' : 'text-xl font-bold text-gray-900';
+  const cardTitle = darkMode ? 'text-lg font-bold text-white' : 'text-lg font-bold text-gray-900';
   const chartTheme = darkMode ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900';
   const tableTheme = darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200';
   const inputTheme = darkMode ? 'bg-gray-800 text-white border-gray-600' : 'bg-white text-black border-gray-300';
@@ -140,10 +115,6 @@ export default function KodeKloudDashboard() {
           <button onClick={() => setFilter('active')} className="bg-[#0072CE] text-white px-3 py-1 rounded hover:bg-[#005fa3]">Active</button>
           <button onClick={() => setFilter('inactive')} className="bg-[#0072CE] text-white px-3 py-1 rounded hover:bg-[#005fa3]">Inactive</button>
           <button onClick={exportToExcel} className="bg-[#007A33] text-white px-3 py-1 rounded hover:bg-[#00662b]">Export to Excel</button>
-          <label className="bg-[#FFB600] text-black px-3 py-1 rounded cursor-pointer">
-            Upload JSON
-            <input type="file" accept=".json" onChange={handleFileUpload} className="hidden" />
-          </label>
           <button onClick={() => setDarkMode(!darkMode)} className="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600">
             {darkMode ? 'Light Mode' : 'Dark Mode'}
           </button>
