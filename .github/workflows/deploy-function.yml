@@ -28,4 +28,5 @@ jobs:
       - name: 🚀 Deploy to Azure Function App
         run: |
           cd backend
+          cat publish-profile.txt
           func azure functionapp publish epamkkgenerator --python --publish-profile publish-profile.txt
