@@ -1,61 +1,112 @@
 
-# KodeKloud License Report Dashboard
+# KodeKloud License Dashboard
 
-![Architecture Diagram](docs/architecture-diagram.png)
+This project provides an automated reporting and visualization tool for monitoring KodeKloud license usage within EPAM. It is composed of a Python backend for data transformation and an interactive React-based frontend deployed via Azure Static Web Apps.
 
-This project implements an automated solution to generate visual reports from Excel files containing KodeKloud license information.
+---
 
-## 📌 Main Functionality
+## 🌐 Live URL
 
-- Reads `KodeKloudAdmin.xlsx` and `activity_leaderboard.xlsx` files from Azure Blob Storage.
-- Processes them using Python and Pandas to merge, clean, and analyze the data.
-- Generates a JSON file with the enriched data.
-- Automatically deploys the portal to Azure Static Web Apps.
+> **Dashboard:** [https://delightful-water-0ae8bed0f.6.azurestaticapps.net](https://delightful-water-0ae8bed0f.6.azurestaticapps.net)
 
-## ⚙️ Architecture
+---
 
-1. **Azure Blob Storage**: Stores the source Excel files.
-2. **GitHub Actions**: Runs a pipeline that:
-   - Downloads files from Blob Storage.
-   - Runs the `generate_report.py` script to create the JSON.
-   - Commits and pushes the new JSON to `public/data/kodekloud_data.json`.
-   - Automatically deploys to Azure Static Web Apps.
-3. **React Frontend (Vite)**: Displays the JSON data in a responsive and filterable dashboard.
+## 🧠 Features
 
-## 📁 Repository Structure
+- 🔄 Azure Function to generate reports from XLSX files stored in Azure Blob Storage.
+- 📊 React frontend with dark mode, charts, filters, search, and Excel export.
+- ☁️ JSON report automatically uploaded and versioned in Azure Blob.
+- 🔐 GitHub Actions CI/CD pipeline for automated deployment.
+
+---
+
+## 📁 Project Structure
 
 ```
 KodeKloudEPAM/
-├── backend/                     # Azure Function and Python script
-│   └── generate_report.py
-├── public/
-│   └── data/
-│       └── kodekloud_data.json  # Automatically generated file
-├── src/                         # React frontend
-│   └── KodeKloudDashboard.jsx
+├── backend/
+│   ├── GenerateReport/
+│   │   ├── __init__.py
+│   │   ├── generate_report.py
+│   │   ├── function.json
+│   │   └── ...
+│   ├── requirements.txt
+│   └── local.settings.json
+│
+├── frontend/
+│   ├── index.html
+│   ├── vite.config.js
+│   ├── tailwind.config.js
+│   ├── public/
+│   ├── dist/
+│   └── src/
+│
 ├── .github/workflows/
-│   ├── generate-report.yml      # Generates and updates the JSON
-│   └── azure-static-web-apps-*.yml # Deploys the site
+│   └── azure-static-web-apps-delightful-water-0ae8bed0f.yml
+│
 ├── README.md
-└── docs/
-    └── architecture-diagram.png
+└── NEXT_STEPS.md
 ```
 
-## 🚀 How the Pipeline Works
+---
 
-1. You can manually trigger it from the **Actions** tab.
-2. The `generate-report.yml` workflow:
-   - Installs Python dependencies.
-   - Generates the JSON from the files in Azure Blob.
-   - Commits and pushes the JSON to the repository.
-3. The `azure-static-web-apps-*.yml` workflow:
-   - Detects the change in `main`.
-   - Builds the frontend and deploys it to Azure.
+## 🔧 Architecture Diagram
 
-## 🖥️ Access
+![Architecture](https://strepamkkeast2.blob.core.windows.net/kodekloud-inputs/ChatGPT%20Image%20Jun%209%2C%202025%2C%2004_07_45%20PM.png?sp=r&st=2025-06-09T22:12:36Z&se=2026-02-28T06:12:36Z&sv=2024-11-04&sr=b&sig=mkboJ5dHDhJvxFOWvyrpd1xPZ5p6xJ8iiC6jjYx%2FP2g%3D)
 
-The portal is available at: [https://delightful-water-0ae8bed0f.6.azurestaticapps.net](https://delightful-water-0ae8bed0f.6.azurestaticapps.net)
+> **Diagram Highlights:**
+> - Excel files stored in Azure Blob Storage (kodekloud-inputs container)
+> - Azure Function `GenerateReport` processes and uploads JSON
+> - Frontend app fetches JSON directly from Blob Storage with SAS Token
+> - GitHub Actions automate build and deployment
 
-## 🧾 Credits
+---
 
-Developed by Luis Alvarez – EPAM Systems.
+## 🚀 Deployment Overview
+
+### Azure Resources Used
+- Azure Blob Storage: for input XLSX and output JSON files
+- Azure Function App: for processing data and uploading JSON
+- Azure Static Web App: for hosting the frontend
+
+### GitHub Actions Flow
+1. On `main` push or manual trigger
+2. Python dependencies installed
+3. Azure Function can optionally be triggered to generate the report
+4. Frontend built with Vite and deployed to Azure Static Web Apps
+
+---
+
+## 🔐 Secrets Required
+| Secret Name | Purpose |
+|-------------|---------|
+| `AZURE_STORAGE_CONNECTION_STRING` | Access to Azure Blob Storage |
+| `AZURE_STATIC_WEB_APPS_API_TOKEN_DELIGHTFUL_WATER_0AE8BED0F` | Deploy Static Web App |
+| `GH_PAT` | Push updated JSON to repo |
+
+---
+
+## 📌 Next Steps (See `NEXT_STEPS.md`)
+- 🔁 Schedule Azure Function via Logic App or Timer Trigger
+- 📥 Add email notifications with summary report
+- 🗃️ Add PostgreSQL for historical data tracking
+- 📈 Enhance dashboard with user trends and time-based graphs
+
+---
+
+## 🧪 Local Development
+```bash
+# Backend (Azure Function)
+cd backend
+func start
+
+# Frontend
+cd frontend
+npm install
+npm run dev
+```
+
+---
+
+## 👨‍💻 Author
+Luis Alvarez (luis_alvarez1@epam.com)
