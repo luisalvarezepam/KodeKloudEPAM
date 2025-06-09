@@ -6,7 +6,8 @@ import warnings
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
 import os
-from azure.storage.blob import BlobServiceClient
+from azure.storage.blob import BlobServiceClient, ContainerClient
+from datetime import datetime
 
 warnings.simplefilter("ignore")  # Ignore openpyxl default style warnings
 
@@ -36,6 +37,42 @@ def download_blob_to_file(container_name, blob_name, local_path):
         download_stream = blob_client.download_blob()
         file.write(download_stream.readall())
 
+def upload_file_to_blob(container_name, blob_name, local_path):
+    connection_string = os.environ.get("AZURE_STORAGE_CONNECTION_STRING")
+    if not connection_string:
+        raise Exception("Missing AZURE_STORAGE_CONNECTION_STRING environment variable")
+
+    blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+    container_client = blob_service_client.get_container_client(container_name)
+    blob_client = container_client.get_blob_client(blob_name)
+
+    # Si el archivo existe, renómbralo con timestamp como backup
+    if blob_client.exists():
+        timestamp = datetime.utcnow().strftime('%Y%m%d_%H%M%S')
+        backup_blob_name = f"{blob_name.replace('.json', '')}_{timestamp}.json"
+        backup_blob_client = container_client.get_blob_client(backup_blob_name)
+
+        # Copiar el blob actual al de backup
+        source_url = blob_client.url
+        backup_blob_client.start_copy_from_url(source_url)
+        print(f"📦 Created backup version: {backup_blob_name}")
+
+        # Limitar a 5 versiones más recientes
+        all_blobs = sorted(
+            [b for b in container_client.list_blobs(name_starts_with=blob_name.replace('.json', '')) if b.name.endswith('.json')],
+            key=lambda b: b.last_modified,
+            reverse=True
+        )
+        for old_blob in all_blobs[5:]:
+            container_client.delete_blob(old_blob.name)
+            print(f"🗑️ Deleted old backup: {old_blob.name}")
+
+    # Subir el nuevo archivo
+    with open(local_path, "rb") as data:
+        blob_client.upload_blob(data, overwrite=True)
+        print(f"✅ Uploaded latest: {blob_name}")
+
+
 def generate_report(admin_path, activity_path, output_excel_path, output_json_path):
     admin_df = pd.read_excel(admin_path)
     activity_df = pd.read_excel(activity_path)
@@ -46,7 +83,6 @@ def generate_report(admin_path, activity_path, output_excel_path, output_json_pa
     admin_df = admin_df[['Name', 'Email', 'Program', 'License Accepted']]
     activity_df = activity_df[['Email', 'Lessons Completed', 'Video Hours Watched', 'Labs Completed']]
 
-    # Remove entries where Program is 'LPC'
     admin_df = admin_df[admin_df['Program'].str.strip().str.upper() != 'LPC']
 
     merged = pd.merge(admin_df, activity_df, on='Email', how='left')
@@ -92,27 +128,14 @@ def generate_report(admin_path, activity_path, output_excel_path, output_json_pa
     wb.save(output_excel_path)
 
     json_data = display_df.to_dict(orient='records')
-
-    # Save to root output_json_path
     with open(output_json_path, 'w') as f:
         json.dump(json_data, f, indent=2)
 
-    # Also write to frontend public/data/ directory if available
-    root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    frontend_data_dir = os.path.join(root_dir, "public", "data")
-    os.makedirs(frontend_data_dir, exist_ok=True)
-    frontend_json_path = os.path.join(frontend_data_dir, os.path.basename(output_json_path))
-    with open(frontend_json_path, 'w') as f:
-        json.dump(json_data, f, indent=2)
-
-    # Remove backend/public/data file if it exists
-    backend_data_path = os.path.join(os.path.dirname(__file__), 'public', 'data', os.path.basename(output_json_path))
-    if os.path.exists(backend_data_path):
-        os.remove(backend_data_path)
+    upload_file_to_blob("kodekloud-inputs", os.path.basename(output_json_path), output_json_path)
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("Uso: python generate_report.py <admin_excel_path> <activity_excel_path>")
+        print("Usage: python generate_report.py blob:admin.xlsx blob:activity.xlsx")
         sys.exit(1)
 
     admin_xlsx = sys.argv[1]
