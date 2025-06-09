@@ -1,15 +1,14 @@
-name: Azure Static Web Apps CI/CD
+name: Generate and Deploy KodeKloud Report
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
-  build_and_deploy:
+  generate_and_deploy:
     runs-on: ubuntu-latest
-
     env:
       AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
 
@@ -31,12 +30,23 @@ jobs:
         run: |
           python backend/generate_report.py blob:KodeKloud2025Admin.xlsx blob:activity_leaderboard.xlsx
 
-      - name: ⬆️ Deploy to Azure Static Web Apps
+      - name: 📤 Commit and push updated JSON
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git remote set-url origin https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}
+          git add public/data/kodekloud_data.json
+          git commit -m "🔁 Update JSON report from Azure Blob" || echo "No changes to commit"
+          git push origin HEAD:main
+
+      - name: 🚀 Deploy to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_DELIGHTFUL_WATER_0AE8BED }}
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_DELIGHTFUL_WATER_0AE8BED0F }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           app_location: "/"        # Frontend base path
-          api_location: ""         # If you had Azure Functions
-          output_location: "dist"  # Your Vite output folder (from `vite.config.js`)
+          api_location: ""         # No Azure Functions used
+          output_location: "dist"  # Vite output folder
