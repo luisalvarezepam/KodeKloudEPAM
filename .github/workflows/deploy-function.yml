@@ -27,5 +27,5 @@ jobs:
 
       - name: 🚀 Deploy to Azure Function App
         run: |
-          cd backend/GenerateReport
-          func azure functionapp publish epamkkgenerator --python --no-build --publish-profile ../publish-profile.txt
+          cd backend
+          func azure functionapp publish epamkkgenerator --python --publish-profile publish-profile.txt
