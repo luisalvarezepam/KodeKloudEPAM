@@ -2,7 +2,7 @@ import logging
 import azure.functions as func
 import tempfile
 import os
-from .generate_report import generate_report, download_blob_to_file
+from generate_report import generate_report, download_blob_to_file
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     try:
