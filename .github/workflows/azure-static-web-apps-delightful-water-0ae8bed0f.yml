@@ -52,6 +52,7 @@ jobs:
         working-directory: backend
         run: |
           echo "${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}" | base64 -d > publish-profile.txt
+          ls -lrth
           cat publish-profile.txt
           func azure functionapp publish epamkkgenerator --python --publish-profile publish-profile.txt
 
