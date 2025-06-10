@@ -49,6 +49,7 @@ jobs:
           npm install -g azure-functions-core-tools@4 --unsafe-perm true
 
       - name: 🚀 Publish Azure Function
-        run: |
-          func azure functionapp publish epamkkgenerator --python --publish-profile ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
         working-directory: backend
+        run: |
+          echo "${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}" > publish-profile.txt
+          func azure functionapp publish epamkkgenerator --python --publish-profile publish-profile.txt
