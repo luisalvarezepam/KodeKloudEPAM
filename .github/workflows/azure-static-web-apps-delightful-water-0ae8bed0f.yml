@@ -15,11 +15,29 @@ jobs:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v3
 
-      - name: 🧱 Install frontend dependencies
+      - name: 📦 Cache frontend dependencies
+        uses: actions/cache@v3
+        with:
+          path: frontend/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: 🔍 Lint frontend code
+        run: |
+          cd frontend
+          npm run lint
+
+      - name: 🧱 Install and build frontend
         run: |
           cd frontend
           npm install
           npm run build
+
+      - name: ✅ Test frontend
+        run: |
+          cd frontend
+          npm test
 
       - name: 🚀 Deploy to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@v1
