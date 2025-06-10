@@ -13,17 +13,17 @@
     "routes": [
       {
         "route": "/.auth/login/aad/callback",
-        "allowedRoles": ["anonymous", "authenticated"]
+        "allowedRoles": ["authenticated", "anonymous"]
       },
       {
         "route": "/login",
         "rewrite": "/.auth/login/aad",
-        "allowedRoles": ["anonymous", "authenticated"]
+        "allowedRoles": ["anonymous"]
       },
       {
         "route": "/logout",
         "redirect": "/.auth/logout",
-        "allowedRoles": ["anonymous", "authenticated"]
+        "allowedRoles": ["authenticated", "anonymous"]
       },
       {
         "route": "/*",
@@ -33,6 +33,6 @@
   },
   "navigationFallback": {
     "rewrite": "/index.html",
-    "exclude": ["/images/*.{png,jpg,gif}", "/css/*", "/js/*"]
+    "exclude": ["/static/*", "/.auth/*"]
   }
 }
