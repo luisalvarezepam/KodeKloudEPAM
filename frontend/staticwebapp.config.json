@@ -2,37 +2,18 @@
   "auth": {
     "identityProviders": {
       "azureActiveDirectory": {
-        "userDetailsClaim": "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name",
         "registration": {
           "openIdIssuer": "https://login.microsoftonline.com/<TENANT_ID>",
           "clientIdSettingName": "<AZURE_CLIENT_ID>",
           "clientSecretSettingName": "<AZURE_CLIENT_SECRET>"
         }
       }
-    },
-    "routes": [
-      {
-        "route": "/.auth/login/aad/callback",
-        "allowedRoles": ["authenticated", "anonymous"]
-      },
-      {
-        "route": "/login",
-        "rewrite": "/.auth/login/aad",
-        "allowedRoles": ["anonymous"]
-      },
-      {
-        "route": "/logout",
-        "redirect": "/.auth/logout",
-        "allowedRoles": ["authenticated", "anonymous"]
-      },
-      {
-        "route": "/*",
-        "allowedRoles": ["authenticated"]
-      }
-    ]
+    }
   },
-  "navigationFallback": {
-    "rewrite": "/index.html",
-    "exclude": ["/static/*", "/.auth/*"]
-  }
+  "routes": [
+    {
+      "route": "/*",
+      "allowedRoles": ["authenticated"]
+    }
+  ]
 }
