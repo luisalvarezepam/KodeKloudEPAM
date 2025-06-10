@@ -14,11 +14,6 @@ jobs:
     steps:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v3
-      
-      - name: 🔧 Replace TENANT_ID in config
-        run: |
-          sed -i 's|<TENANT_ID>|${{ secrets.TENANT_ID }}|g' frontend/staticwebapp.config.json
-          cat frontend/staticwebapp.config.json
 
       - name: 🧱 Install frontend dependencies
         run: |

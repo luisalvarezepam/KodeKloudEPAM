@@ -1,6 +1,10 @@
 {
   "routes": [
     {
+      "route": "/login",
+      "serve": "/.auth/login/aad"
+    },
+    {
       "route": "/*",
       "allowedRoles": ["authenticated"]
     }

@@ -1,21 +1,22 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import KodeKloudDashboard from './KodeKloudDashboard';
-import './index.css';
 
 export default function App() {
+  const [user, setUser] = useState(null);
+
   useEffect(() => {
-    fetch("/.auth/me")
-      .then((res) => res.json())
-      .then((data) => {
-        if (!data.clientPrincipal) {
-          window.location.href = "/.auth/login/aad";
+    fetch('/.auth/me')
+      .then(res => res.json())
+      .then(data => {
+        if (data.clientPrincipal) {
+          setUser(data.clientPrincipal);
+        } else {
+          window.location.href = '/login';
         }
-      })
-      .catch((err) => {
-        console.error("Error verifying authentication:", err);
-        window.location.href = "/.auth/login/aad";
       });
   }, []);
+
+  if (!user) return null;  // espera redireccionar
 
   return <KodeKloudDashboard />;
 }
