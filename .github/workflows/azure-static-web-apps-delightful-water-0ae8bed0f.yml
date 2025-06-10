@@ -18,6 +18,8 @@ jobs:
       - name: 🔧 Replace TENANT_ID in config
         run: |
           sed -i 's|<TENANT_ID>|${{ secrets.TENANT_ID }}|g' frontend/staticwebapp.config.json
+          sed -i 's|<CLIENT_ID>|${{ secrets.AZURE_CLIENT_ID }}|g' frontend/staticwebapp.config.json
+          sed -i 's|<CLIENT_SECRET>|${{ secrets.AZURE_CLIENT_SECRET }}|g' frontend/staticwebapp.config.json
           cat frontend/staticwebapp.config.json
 
       - name: 🧱 Install frontend dependencies
