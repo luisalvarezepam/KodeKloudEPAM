@@ -14,8 +14,8 @@
       "azureActiveDirectory": {
         "registration": {
           "openIdIssuer": "https://login.microsoftonline.com/epam.onmicrosoft.com",
-          "clientIdSettingName": "<AZURE_CLIENT_ID>",
-          "clientSecretSettingName": "<AZURE_CLIENT_SECRET>"
+          "clientIdSettingName": "AZURE_CLIENT_ID",
+          "clientSecretSettingName": "AZURE_CLIENT_SECRET"
         }
       }
     }
