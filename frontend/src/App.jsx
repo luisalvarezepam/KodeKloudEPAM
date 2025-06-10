@@ -11,12 +11,17 @@ export default function App() {
         if (data.clientPrincipal) {
           setUser(data.clientPrincipal);
         } else {
-          window.location.href = '/login';
+          // Redirige al login de Entra ID directamente
+          window.location.href = '/.auth/login/aad';
         }
+      })
+      .catch(err => {
+        console.error('Error fetching auth data', err);
+        window.location.href = '/.auth/login/aad';
       });
   }, []);
 
-  if (!user) return null;  // espera redireccionar
+  if (!user) return null;
 
   return <KodeKloudDashboard />;
 }
