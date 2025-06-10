@@ -1,23 +1,8 @@
 {
   "routes": [
     {
-      "route": "/.auth/login/aad/callback",
-      "allowedRoles": ["anonymous"]
-    },
-    {
       "route": "/*",
       "allowedRoles": ["authenticated"]
     }
-  ],
-  "auth": {
-    "identityProviders": {
-      "azureActiveDirectory": {
-        "registration": {
-          "openIdIssuer": "https://login.microsoftonline.com/epam.onmicrosoft.com",
-          "clientIdSettingName": "AZURE_CLIENT_ID",
-          "clientSecretSettingName": "AZURE_CLIENT_SECRET"
-        }
-      }
-    }
-  }
+  ]
 }
