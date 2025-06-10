@@ -15,8 +15,5 @@
         }
       }
     }
-  },
-  "globalHeaders": {
-    "X-Role-Check": "disabled"
   }
 }
