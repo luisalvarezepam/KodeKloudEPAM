@@ -14,10 +14,6 @@
       "allowedRoles": ["anonymous", "authenticated"]
     },
     {
-      "route": "/",
-      "rewrite": "/.auth/login/aad"
-    },
-    {
       "route": "/*",
       "allowedRoles": ["authenticated"]
     }
