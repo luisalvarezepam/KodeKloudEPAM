@@ -15,8 +15,7 @@
     },
     {
       "route": "/",
-      "rewrite": "/.auth/login/aad",
-      "statusCode": 302
+      "rewrite": "/.auth/login/aad"
     },
     {
       "route": "/*",
