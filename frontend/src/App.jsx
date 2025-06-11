@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import KodeKloudDashboard from './KodeKloudDashboard';
+import SignedOut from './SignedOut';
 
-export default function App() {
+function RequireAuth({ children }) {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [checked, setChecked] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     fetch('/.auth/me')
@@ -11,19 +14,37 @@ export default function App() {
       .then(data => {
         if (data.clientPrincipal) {
           setUser(data.clientPrincipal);
-        } else {
-          // 🔁 Si no está autenticado, redirige al login
-          window.location.href = '/.auth/login/aad';
         }
       })
-      .catch(() => {
-        // 🔁 Incluso si hay error, redirige
-        window.location.href = '/.auth/login/aad';
-      })
-      .finally(() => setLoading(false));
+      .finally(() => setChecked(true));
   }, []);
 
-  if (loading) return <p className="p-6 text-center">Cargando...</p>;
+  if (!checked) return <p className="p-6 text-center">Cargando...</p>;
 
-  return <KodeKloudDashboard user={user} />;
+  if (!user) {
+    if (location.pathname !== '/signed-out') {
+      window.location.href = '/.auth/login/aad';
+    }
+    return null;
+  }
+
+  return children({ user });
+}
+
+export default function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/signed-out" element={<SignedOut />} />
+        <Route
+          path="*"
+          element={
+            <RequireAuth>
+              {({ user }) => <KodeKloudDashboard user={user} />}
+            </RequireAuth>
+          }
+        />
+      </Routes>
+    </Router>
+  );
 }

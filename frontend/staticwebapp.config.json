@@ -1,8 +1,16 @@
 {
   "routes": [
     {
+      "route": "/signed-out",
+      "allowedRoles": ["anonymous"]
+    },
+    {
       "route": "/.auth/*",
       "allowedRoles": ["anonymous", "authenticated"]
+    },
+    {
+      "route": "/",
+      "allowedRoles": ["authenticated"]
     },
     {
       "route": "/*",
@@ -14,4 +22,3 @@
     "exclude": ["/.auth/*"]
   }
 }
-
