@@ -1,115 +1,70 @@
+# KodeKloud License Usage Dashboard
 
-# 📊 KodeKloudEPAM Dashboard
+This project is a real-time dashboard that tracks the usage of KodeKloud licenses by EPAM team members. It pulls data from Azure Blob Storage, processes it with an Azure Function, and displays the results using a React-based frontend deployed to Azure Static Web Apps.
 
-Este proyecto despliega un portal interactivo para visualizar el uso de licencias de KodeKloud en equipos internos de EPAM México. La solución está diseñada para ser moderna, segura y fácilmente desplegable usando infraestructura en la nube de Microsoft Azure.
+## 🌐 Architecture Overview
 
----
+![Architecture Diagram](https://strepamkkeast2.blob.core.windows.net/kodekloud-inputs/ChatGPT%20Image%20Jun%2011%2C%202025%2C%2004_17_31%20PM.png?sp=r&st=2025-06-11T23:04:40Z&se=2026-02-28T07:04:40Z&sv=2024-11-04&sr=b&sig=vRtbhj%2FTFvVQZcj4uPn%2F4P3XlcFhuJ5gR9fUUPRpc7Y%3D)
 
-## 🧭 Arquitectura General
+## 🧩 Components
 
-![Arquitectura](https://strepamkkeast2.blob.core.windows.net/kodekloud-inputs/ChatGPT%20Image%20Jun%2011%2C%202025%2C%2004_08_36%20PM.png?sp=r&st=2025-06-11T22:10:33Z&se=2026-02-28T06:10:33Z&sv=2024-11-04&sr=b&sig=1jtzROWE6z%2FHD5hNJKwOs%2BCAkwF2JJQGC1qqUupORGk%3D)
+- **Azure Blob Storage**: Stores input Excel files (`KodeKloud2025Admin.xlsx`, `activity_leaderboard.xlsx`) and output JSON (`kodekloud_data.json`).
+- **Azure Function App**: Triggered via HTTP, processes the Excel files and generates a report in Excel and JSON formats.
+- **GitHub Actions**:
+  - One workflow generates the JSON report by calling the Azure Function.
+  - Another workflow builds and deploys the frontend to Azure Static Web Apps.
+- **Azure Static Web Apps**:
+  - Hosts the frontend.
+  - Integrates with Microsoft Entra ID for secure enterprise login.
+- **Authentication**: Uses Entra ID (formerly Azure AD) with `staticwebapp.config.json` to restrict access to EPAM users only.
 
----
+## 🔐 Authentication Flow
 
-## 📦 Tecnologías utilizadas
+Users accessing the site are redirected to login with their EPAM Entra ID account. Once authenticated, they are granted access to the dashboard. Unauthorized users are blocked.
 
-- **Frontend**: React + Vite (contenedor Docker)
-- **Backend**: Azure Functions en Python (procesamiento de archivos Excel)
-- **Autenticación**: Microsoft Entra ID (Azure AD corporativo)
-- **Almacenamiento**: Azure Blob Storage (JSON y archivos XLSX)
-- **Hosting**: Azure Web App for Containers
-- **Contenedores**: Azure Container Registry (ACR)
-- **CI/CD**: GitHub Actions
+## 🚀 Deployment Steps
 
----
+### 1. Frontend
+- React + Tailwind + Vite
+- Deployed to Azure Static Web Apps
+- GitHub Actions builds and pushes to production
 
-## 🚀 Despliegue
+### 2. Backend (Azure Function)
+- Python Azure Function hosted in Azure App Service
+- Publishes using GitHub Actions and a publish profile
+- Processes data from Blob Storage and writes output back
 
-### 1. Construcción y publicación del contenedor (React)
+### 3. Secrets (in GitHub)
+- `AZURE_CLIENT_ID`
+- `AZURE_CLIENT_SECRET`
+- `TENANT_ID`
+- `AZURE_FUNCTIONAPP_PUBLISH_PROFILE`
+- `AZURE_STATIC_WEB_APPS_API_TOKEN_DELIGHTFUL_WATER_0AE8BED0F`
+
+## 📊 Features
+
+- Active/Inactive filtering
+- Search and sort
+- Dark mode
+- Export to Excel
+- Charts and summaries
+
+## 🧪 Testing Locally
 
 ```bash
-az acr build --registry epamkodekloudacr --image kodekloud-frontend:latest ./frontend
+cd frontend
+npm install
+npm run dev
 ```
 
-### 2. CI/CD con GitHub Actions
+## 🔁 Triggering the Report Generation
 
-Archivo: `.github/workflows/deploy.yml`
-
-- Construye imagen del frontend con `az acr build`
-- Publica a ACR
-- Despliega a Azure App Service
-- Despliega Azure Function con código Python (`backend/`)
-
----
-
-## 🔐 Autenticación
-
-- Se usa **Microsoft Entra ID corporativo** con App Service Authentication.
-- Solo usuarios del tenant `epam.onmicrosoft.com` pueden acceder.
-- Los datos del usuario autenticado se obtienen desde `/.auth/me`.
-- El botón “Cerrar sesión” redirige a Entra ID usando `post_logout_redirect_uri`.
-
----
-
-## 🗂 Estructura del Proyecto
+The Azure Function can be triggered using:
 
 ```
-/
-├── .github/workflows/      # CI/CD con GitHub Actions
-├── backend/                # Azure Function para procesar archivos
-├── frontend/               # Aplicación React + Vite
-│   ├── App.jsx
-│   ├── KodeKloudDashboard.jsx
-│   └── ...
-├── Dockerfile              # Contenedor para frontend
-└── README.md               # Este archivo
+https://epamkkgenerator.azurewebsites.net/api/GenerateReport?code=<FUNCTION_KEY>
 ```
 
----
+## 👤 Maintainer
 
-## 📈 Funcionalidades
-
-- Dashboard interactivo con:
-  - Filtros por estado de licencia (activo/inactivo)
-  - Búsqueda por nombre
-  - Descarga de reporte Excel
-  - Estadísticas visuales y gráficas
-  - Visualización del usuario autenticado y botón de logout
-- Modo oscuro/claro
-
----
-
-## 🔧 Variables de entorno
-
-Configura lo siguiente en el portal de Azure:
-
-| Variable               | Descripción                                    |
-|------------------------|------------------------------------------------|
-| `AZURE_CLIENT_ID`      | Client ID de la App Registration               |
-| `AZURE_CLIENT_SECRET`  | Secreto generado en Azure AD                   |
-| `BLOB_STORAGE_URI`     | URI pública al JSON procesado                 |
-| `FUNCTION_URI`         | (Opcional) URI para re-generar datos          |
-
----
-
-## 🧪 Endpoints internos
-
-- `/.auth/me` – Devuelve los datos del usuario autenticado.
-- Azure Function (`backend/`) lee archivos XLSX desde Blob Storage y genera un JSON en el mismo contenedor.
-
----
-
-## 🧑‍💻 Autor
-
-Luis Alvarez – [luis_alvarez1@epam.com](mailto:luis_alvarez1@epam.com)
-
----
-
-## 📄 Licencia
-
-Distribución interna EPAM. No redistribuir sin autorización.
-
-
-## Updated Architecture
-
-![Architecture Diagram](https://strepamkkeast2.blob.core.windows.net/kodekloud-inputs/ChatGPT%20Image%20Jun%2011%2C%202025%2C%2004_17_31%20PM.png?sp=r&st=2025-06-11T22:41:07Z&se=2026-02-28T06:41:07Z&sv=2024-11-04&sr=b&sig=Idl%2FtiH7JbFDdjsfE9gl7QqkuyUywckHvll9vK20JZw%3D)
+Luis Alvarez (luis_alvarez1@epam.com)
