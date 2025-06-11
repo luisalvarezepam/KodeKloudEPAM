@@ -1,9 +1,8 @@
 {
+  "auth": {
+    "identityProviders": {}
+  },
   "routes": [
-    {
-      "route": "/signed-out",
-      "allowedRoles": ["anonymous"]
-    },
     {
       "route": "/.auth/*",
       "allowedRoles": ["anonymous", "authenticated"]
