@@ -16,35 +16,47 @@ export default function KodeKloudDashboard() {
   const [sortKey, setSortKey] = useState('Video Hours Watched');
   const [search, setSearch] = useState('');
   const [darkMode, setDarkMode] = useState(false);
+  const [user, setUser] = useState(null); // 👈 NUEVO estado de sesión
   const licenseLimit = 40;
 
- useEffect(() => {
-  document.title = "Kode Kloud License Usage";
-  fetch('https://strepamkkeast2.blob.core.windows.net/kodekloud-inputs/kodekloud_data.json?sp=r&st=2025-06-09T15:09:14Z&se=2026-02-28T23:09:14Z&sv=2024-11-04&sr=b&sig=An7b7jFr7Uh%2FnFYqoTaILe7eqw8usBFsY79QUh%2F7r2E%3D')
-    .then(res => {
-      if (!res.ok) {
-        throw new Error(`HTTP error ${res.status}`);
-      }
-      return res.json();
-    })
-    .then(json => {
-      const enriched = json.map(u => {
-        const noActivity =
-          (u['Lessons Completed'] === 0 || u['Lessons Completed'] === '0') &&
-          (u['Video Hours Watched'] === 0 || u['Video Hours Watched'] === '0') &&
-          (u['Labs Completed'] === 0 || u['Labs Completed'] === '0');
-        return {
-          ...u,
-          Status: noActivity ? 'No activity or progress' : u.Status || '-',
-        };
+  useEffect(() => {
+    document.title = "Kode Kloud License Usage";
+
+    // 👇 Verifica sesión autenticada
+    fetch('/.auth/me')
+      .then(res => res.json())
+      .then(json => {
+        if (!json.clientPrincipal) {
+          window.location.href = '/.auth/login/aad'; // Redirige si no hay sesión
+        } else {
+          setUser(json.clientPrincipal);
+        }
       });
-      setData(enriched);
-    })
-    .catch(err => {
-      console.error("Failed to fetch JSON:", err);
-      alert("Failed to load data. Please check your Blob Storage CORS settings.");
-    });
-}, []);
+
+    // Carga de datos
+    fetch('https://strepamkkeast2.blob.core.windows.net/kodekloud-inputs/kodekloud_data.json?sp=r&st=2025-06-09T15:09:14Z&se=2026-02-28T23:09:14Z&sv=2024-11-04&sr=b&sig=An7b7jFr7Uh%2FnFYqoTaILe7eqw8usBFsY79QUh%2F7r2E%3D')
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+        return res.json();
+      })
+      .then(json => {
+        const enriched = json.map(u => {
+          const noActivity =
+            (u['Lessons Completed'] === 0 || u['Lessons Completed'] === '0') &&
+            (u['Video Hours Watched'] === 0 || u['Video Hours Watched'] === '0') &&
+            (u['Labs Completed'] === 0 || u['Labs Completed'] === '0');
+          return {
+            ...u,
+            Status: noActivity ? 'No activity or progress' : u.Status || '-',
+          };
+        });
+        setData(enriched);
+      })
+      .catch(err => {
+        console.error("Failed to fetch JSON:", err);
+        alert("Failed to load data. Please check your Blob Storage CORS settings.");
+      });
+  }, []);
 
   const normalize = val => String(val).trim().toLowerCase();
   const isActive = user => normalize(user['License Accepted']) === '✓';
@@ -127,6 +139,17 @@ export default function KodeKloudDashboard() {
           <button onClick={() => setDarkMode(!darkMode)} className="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600">
             {darkMode ? 'Light Mode' : 'Dark Mode'}
           </button>
+          {user && (
+            <>
+              <span className="ml-2 text-sm whitespace-nowrap">Hola, {user.userDetails}</span>
+              <a
+                href="/.auth/logout"
+                className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 ml-1"
+              >
+                Cerrar sesión
+              </a>
+            </>
+          )}
         </div>
       </header>
 

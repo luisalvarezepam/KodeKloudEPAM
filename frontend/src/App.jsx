@@ -3,6 +3,7 @@ import KodeKloudDashboard from './KodeKloudDashboard';
 
 export default function App() {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch('/.auth/me')
@@ -11,17 +12,20 @@ export default function App() {
         if (data.clientPrincipal) {
           setUser(data.clientPrincipal);
         } else {
-          // Redirige al login de Entra ID directamente
           window.location.href = '/.auth/login/aad';
         }
       })
       .catch(err => {
         console.error('Error fetching auth data', err);
         window.location.href = '/.auth/login/aad';
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, []);
 
+  if (loading) return <p className="text-center p-8">Cargando...</p>;
   if (!user) return null;
 
-  return <KodeKloudDashboard />;
+  return <KodeKloudDashboard user={user} />;
 }
