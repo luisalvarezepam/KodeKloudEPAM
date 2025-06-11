@@ -1,112 +1,110 @@
 
-# KodeKloud License Dashboard
+# 📊 KodeKloudEPAM Dashboard
 
-This project provides an automated reporting and visualization tool for monitoring KodeKloud license usage within EPAM. It is composed of a Python backend for data transformation and an interactive React-based frontend deployed via Azure Static Web Apps.
-
----
-
-## 🌐 Live URL
-
-> **Dashboard:** [https://delightful-water-0ae8bed0f.6.azurestaticapps.net](https://delightful-water-0ae8bed0f.6.azurestaticapps.net)
+Este proyecto despliega un portal interactivo para visualizar el uso de licencias de KodeKloud en equipos internos de EPAM México. La solución está diseñada para ser moderna, segura y fácilmente desplegable usando infraestructura en la nube de Microsoft Azure.
 
 ---
 
-## 🧠 Features
+## 🧭 Arquitectura General
 
-- 🔄 Azure Function to generate reports from XLSX files stored in Azure Blob Storage.
-- 📊 React frontend with dark mode, charts, filters, search, and Excel export.
-- ☁️ JSON report automatically uploaded and versioned in Azure Blob.
-- 🔐 GitHub Actions CI/CD pipeline for automated deployment.
+![Arquitectura](https://strepamkkeast2.blob.core.windows.net/kodekloud-inputs/ChatGPT%20Image%20Jun%2011%2C%202025%2C%2004_08_36%20PM.png?sp=r&st=2025-06-11T22:10:33Z&se=2026-02-28T06:10:33Z&sv=2024-11-04&sr=b&sig=1jtzROWE6z%2FHD5hNJKwOs%2BCAkwF2JJQGC1qqUupORGk%3D)
 
 ---
 
-## 📁 Project Structure
+## 📦 Tecnologías utilizadas
 
-```
-KodeKloudEPAM/
-├── backend/
-│   ├── GenerateReport/
-│   │   ├── __init__.py
-│   │   ├── generate_report.py
-│   │   ├── function.json
-│   │   └── ...
-│   ├── requirements.txt
-│   └── local.settings.json
-│
-├── frontend/
-│   ├── index.html
-│   ├── vite.config.js
-│   ├── tailwind.config.js
-│   ├── public/
-│   ├── dist/
-│   └── src/
-│
-├── .github/workflows/
-│   └── azure-static-web-apps-delightful-water-0ae8bed0f.yml
-│
-├── README.md
-└── NEXT_STEPS.md
-```
+- **Frontend**: React + Vite (contenedor Docker)
+- **Backend**: Azure Functions en Python (procesamiento de archivos Excel)
+- **Autenticación**: Microsoft Entra ID (Azure AD corporativo)
+- **Almacenamiento**: Azure Blob Storage (JSON y archivos XLSX)
+- **Hosting**: Azure Web App for Containers
+- **Contenedores**: Azure Container Registry (ACR)
+- **CI/CD**: GitHub Actions
 
 ---
 
-## 🔧 Architecture Diagram
+## 🚀 Despliegue
 
-![Architecture](https://strepamkkeast2.blob.core.windows.net/kodekloud-inputs/ChatGPT%20Image%20Jun%209%2C%202025%2C%2004_07_45%20PM.png?sp=r&st=2025-06-09T22:12:36Z&se=2026-02-28T06:12:36Z&sv=2024-11-04&sr=b&sig=mkboJ5dHDhJvxFOWvyrpd1xPZ5p6xJ8iiC6jjYx%2FP2g%3D)
+### 1. Construcción y publicación del contenedor (React)
 
-> **Diagram Highlights:**
-> - Excel files stored in Azure Blob Storage (kodekloud-inputs container)
-> - Azure Function `GenerateReport` processes and uploads JSON
-> - Frontend app fetches JSON directly from Blob Storage with SAS Token
-> - GitHub Actions automate build and deployment
-
----
-
-## 🚀 Deployment Overview
-
-### Azure Resources Used
-- Azure Blob Storage: for input XLSX and output JSON files
-- Azure Function App: for processing data and uploading JSON
-- Azure Static Web App: for hosting the frontend
-
-### GitHub Actions Flow
-1. On `main` push or manual trigger
-2. Python dependencies installed
-3. Azure Function can optionally be triggered to generate the report
-4. Frontend built with Vite and deployed to Azure Static Web Apps
-
----
-
-## 🔐 Secrets Required
-| Secret Name | Purpose |
-|-------------|---------|
-| `AZURE_STORAGE_CONNECTION_STRING` | Access to Azure Blob Storage |
-| `AZURE_STATIC_WEB_APPS_API_TOKEN_DELIGHTFUL_WATER_0AE8BED0F` | Deploy Static Web App |
-| `GH_PAT` | Push updated JSON to repo |
-
----
-
-## 📌 Next Steps (See `NEXT_STEPS.md`)
-- 🔁 Schedule Azure Function via Logic App or Timer Trigger
-- 📥 Add email notifications with summary report
-- 🗃️ Add PostgreSQL for historical data tracking
-- 📈 Enhance dashboard with user trends and time-based graphs
-
----
-
-## 🧪 Local Development
 ```bash
-# Backend (Azure Function)
-cd backend
-func start
+az acr build --registry epamkodekloudacr --image kodekloud-frontend:latest ./frontend
+```
 
-# Frontend
-cd frontend
-npm install
-npm run dev
+### 2. CI/CD con GitHub Actions
+
+Archivo: `.github/workflows/deploy.yml`
+
+- Construye imagen del frontend con `az acr build`
+- Publica a ACR
+- Despliega a Azure App Service
+- Despliega Azure Function con código Python (`backend/`)
+
+---
+
+## 🔐 Autenticación
+
+- Se usa **Microsoft Entra ID corporativo** con App Service Authentication.
+- Solo usuarios del tenant `epam.onmicrosoft.com` pueden acceder.
+- Los datos del usuario autenticado se obtienen desde `/.auth/me`.
+- El botón “Cerrar sesión” redirige a Entra ID usando `post_logout_redirect_uri`.
+
+---
+
+## 🗂 Estructura del Proyecto
+
+```
+/
+├── .github/workflows/      # CI/CD con GitHub Actions
+├── backend/                # Azure Function para procesar archivos
+├── frontend/               # Aplicación React + Vite
+│   ├── App.jsx
+│   ├── KodeKloudDashboard.jsx
+│   └── ...
+├── Dockerfile              # Contenedor para frontend
+└── README.md               # Este archivo
 ```
 
 ---
 
-## 👨‍💻 Author
-Luis Alvarez (luis_alvarez1@epam.com)
+## 📈 Funcionalidades
+
+- Dashboard interactivo con:
+  - Filtros por estado de licencia (activo/inactivo)
+  - Búsqueda por nombre
+  - Descarga de reporte Excel
+  - Estadísticas visuales y gráficas
+  - Visualización del usuario autenticado y botón de logout
+- Modo oscuro/claro
+
+---
+
+## 🔧 Variables de entorno
+
+Configura lo siguiente en el portal de Azure:
+
+| Variable               | Descripción                                    |
+|------------------------|------------------------------------------------|
+| `AZURE_CLIENT_ID`      | Client ID de la App Registration               |
+| `AZURE_CLIENT_SECRET`  | Secreto generado en Azure AD                   |
+| `BLOB_STORAGE_URI`     | URI pública al JSON procesado                 |
+| `FUNCTION_URI`         | (Opcional) URI para re-generar datos          |
+
+---
+
+## 🧪 Endpoints internos
+
+- `/.auth/me` – Devuelve los datos del usuario autenticado.
+- Azure Function (`backend/`) lee archivos XLSX desde Blob Storage y genera un JSON en el mismo contenedor.
+
+---
+
+## 🧑‍💻 Autor
+
+Luis Alvarez – [luis_alvarez1@epam.com](mailto:luis_alvarez1@epam.com)
+
+---
+
+## 📄 Licencia
+
+Distribución interna EPAM. No redistribuir sin autorización.
