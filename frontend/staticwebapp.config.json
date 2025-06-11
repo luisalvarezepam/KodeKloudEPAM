@@ -1,6 +1,10 @@
 {
   "auth": {
-    "identityProviders": {}
+    "identityProviders": {
+      "azureActiveDirectory": {
+        "registration": {}  
+      }
+    }
   },
   "routes": [
     {
@@ -8,8 +12,8 @@
       "allowedRoles": ["anonymous", "authenticated"]
     },
     {
-      "route": "/",
-      "allowedRoles": ["authenticated"]
+      "route": "/signed-out",
+      "allowedRoles": ["anonymous"]
     },
     {
       "route": "/*",
