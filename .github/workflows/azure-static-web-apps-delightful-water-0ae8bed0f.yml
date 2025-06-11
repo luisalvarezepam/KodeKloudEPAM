@@ -23,7 +23,7 @@ jobs:
       - name: 📦 Build and Push Docker image to ACR
         run: |
           az acr build --registry epamkodekloudacr \
-                       --image kodekloudfrontend:latest \
+                       --image kodeklouddashboard:latest \
                        ./frontend
 
   deploy_app_service:
