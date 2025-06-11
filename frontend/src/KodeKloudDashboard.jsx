@@ -97,8 +97,13 @@ export default function KodeKloudDashboard({ user }) {
     <div className={`min-h-screen ${themeClasses} p-4`}>
       <header className="bg-[#052E57] p-6 shadow mb-4 flex flex-wrap justify-between items-center text-white sticky top-0 z-10">
         <div className="flex items-center gap-4">
-          <img src="https://www.epam.com/content/dam/epam/homepage/epam_logo_light.svg" alt="EPAM Logo" className="h-10 invert" />
+          <img
+            src="https://www.epam.com/content/dam/epam/homepage/epam_logo_light.svg"
+            alt="EPAM Logo"
+            className="h-10 invert"
+          />
         </div>
+
         <div className="flex flex-wrap items-center gap-2">
           <input
             type="text"
@@ -119,20 +124,22 @@ export default function KodeKloudDashboard({ user }) {
           <button onClick={() => setDarkMode(!darkMode)} className="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600">
             {darkMode ? 'Light Mode' : 'Dark Mode'}
           </button>
+
           {user && (
-            <>
-              <span className="ml-2 text-sm whitespace-nowrap">Hola, {user.userDetails}</span>
+            <div className="flex flex-col text-sm ml-4">
+              <span>Hola, {user.user_claims?.find(c => c.typ === 'name')?.val || user.userDetails}</span>
+              <span>{user.user_claims?.find(c => c.typ === 'preferred_username')?.val}</span>
               <a
-                href="/.auth/logout?post_logout_redirect_uri=/signed-out"
-                className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 ml-1"
+                href={`https://login.microsoftonline.com/b41b72d0-4e9f-4c26-8a69-f949f367c91d/oauth2/v2.0/logout?post_logout_redirect_uri=${window.location.origin}/signed-out`}
+                className="bg-red-600 text-white px-2 py-1 mt-1 rounded hover:bg-red-700 text-center"
               >
                 Cerrar sesión
               </a>
-            </>
+            </div>
           )}
-
         </div>
       </header>
+
 
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className={`p-4 rounded-lg shadow hover:shadow-lg ${cardTheme}`}>
