@@ -121,13 +121,14 @@ export default function KodeKloudDashboard({ user }) {
           </button>
           {user && (
             <>
-              <span className="ml-2 text-sm whitespace-nowrap">Hola, {user.userDetails}</span>
+              <span className="ml-2 text-sm whitespace-nowrap">Hola, {user?.userDetails}</span>
               <a
-                href="/.auth/logout?post_logout_redirect_uri=/signed-out"
+                href="https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri=https://mxepamkodekloud.azurewebsites.net/signed-out"
                 className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 ml-1"
               >
                 Cerrar sesión
               </a>
+
             </>
           )}
 
