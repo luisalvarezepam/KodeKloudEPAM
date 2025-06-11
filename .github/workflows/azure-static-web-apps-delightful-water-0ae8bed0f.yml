@@ -41,7 +41,7 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: mxepamkodekloud
-          images: epamkodekloudacr.azurecr.io/kodeklouddashboard:latest
+          images: kodeklouddashboard:latest
 
   deploy_function:
     name: ⚙️ Deploy Azure Function with Remote Build
