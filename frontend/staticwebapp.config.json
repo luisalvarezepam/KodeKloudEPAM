@@ -15,7 +15,8 @@
     },
     {
       "route": "/",
-      "allowedRoles": ["authenticated"]
+      "rewrite": "/.auth/login/aad",
+      "statusCode": 302
     },
     {
       "route": "/*",
