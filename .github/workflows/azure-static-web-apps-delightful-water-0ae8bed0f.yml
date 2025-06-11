@@ -23,7 +23,7 @@ jobs:
       - name: 📦 Build and Push Docker image to ACR
         run: |
           az acr build --registry epamkodekloudacr \
-                       --image kodeklouddashboard:latest \
+                       --image kodekloudfrontend:latest \
                        ./frontend
 
   deploy_app_service:
@@ -41,7 +41,7 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: mxepamkodekloud
-          images: kodeklouddashboard:latest
+          images: epamkodekloudacr.azurecr.io/kodeklouddashboard:latest
 
   deploy_function:
     name: ⚙️ Deploy Azure Function with Remote Build
