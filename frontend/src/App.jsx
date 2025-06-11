@@ -11,7 +11,7 @@ export default function App() {
     fetch('/.auth/me')
       .then(res => res.json())
       .then(data => {
-        console.log('🔐 Datos de autenticación:', data);
+        console.log('🔐 Resultado de /.auth/me:', data);
         setRawAuth(data);
         if (data.clientPrincipal) {
           setUser(data.clientPrincipal);
@@ -25,10 +25,12 @@ export default function App() {
       });
   }, []);
 
-  if (loading) return <p className="text-center p-8">Cargando...</p>;
+  if (loading) {
+    return <p className="text-center p-6">⏳ Verificando autenticación...</p>;
+  }
 
   if (!user) {
-    return <AuthDebug />;
+    return <AuthDebug rawData={rawAuth} />;
   }
 
   return <KodeKloudDashboard user={user} />;

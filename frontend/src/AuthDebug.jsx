@@ -1,30 +1,14 @@
-import { useEffect, useState } from 'react';
+import React from 'react';
 
-export default function AuthDebug() {
-  const [authInfo, setAuthInfo] = useState(null);
-
-  useEffect(() => {
-    fetch('/.auth/me')
-      .then(res => res.json())
-      .then(data => {
-        console.log('🔐 Datos de autenticación:', data);
-        setAuthInfo(data);
-      })
-      .catch(err => {
-        console.error('❌ Error al consultar /.auth/me:', err);
-      });
-  }, []);
-
+export default function AuthDebug({ rawData }) {
   return (
-    <div className="p-6 max-w-2xl mx-auto bg-white rounded shadow mt-10 text-gray-800">
-      <h2 className="text-xl font-semibold mb-4">🔍 Depuración de autenticación</h2>
-      <p className="mb-4 text-gray-600">
-        Este es el contenido crudo devuelto por <code>/.auth/me</code>.
+    <div className="p-8 max-w-2xl mx-auto bg-white rounded shadow text-gray-800 mt-10">
+      <h2 className="text-xl font-bold mb-4">🔍 No has iniciado sesión</h2>
+      <p className="mb-2">
+        El sistema no detecta sesión activa. Puedes hacer clic para iniciar sesión manualmente:
       </p>
-      <pre className="bg-gray-100 text-sm p-4 rounded overflow-auto">
-        {authInfo ? JSON.stringify(authInfo, null, 2) : 'Cargando...'}
-      </pre>
-      <div className="mt-6 text-center">
+
+      <div className="mb-4">
         <a
           href="/.auth/login/aad"
           className="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700"
@@ -32,6 +16,11 @@ export default function AuthDebug() {
           Iniciar sesión con Microsoft
         </a>
       </div>
+
+      <h3 className="text-md font-semibold mb-2">📦 Respuesta de <code>/.auth/me</code>:</h3>
+      <pre className="bg-gray-100 p-4 text-sm rounded overflow-auto">
+        {rawData ? JSON.stringify(rawData, null, 2) : 'No se recibió respuesta.'}
+      </pre>
     </div>
   );
 }
