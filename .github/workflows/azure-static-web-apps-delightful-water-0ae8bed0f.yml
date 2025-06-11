@@ -25,6 +25,7 @@ jobs:
           az acr build --registry epamkodekloudacr \
                        --image kodeklouddashboard:latest \
                        ./frontend
+
   deploy_app_service:
     name: 🚀 Deploy Frontend Container to Azure App Service
     runs-on: ubuntu-latest
@@ -39,7 +40,7 @@ jobs:
       - name: 📦 Deploy container to App Service
         uses: azure/webapps-deploy@v2
         with:
-          app-name: mxepamkodekloud  # ⚠️ Usa el nombre real de tu App Service
+          app-name: mxepamkodekloud
           images: epamkodekloudacr.azurecr.io/kodeklouddashboard:latest
 
   deploy_function:
