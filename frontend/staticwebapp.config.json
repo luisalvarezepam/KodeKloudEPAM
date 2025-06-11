@@ -4,6 +4,9 @@
       "azureActiveDirectory": {
         "registration": {}  
       }
+    },
+    "rolesSource": {
+      "apiUrl": "/api/getRolesForUser"
     }
   },
   "routes": [
