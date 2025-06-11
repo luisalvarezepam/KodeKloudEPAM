@@ -108,3 +108,8 @@ Luis Alvarez – [luis_alvarez1@epam.com](mailto:luis_alvarez1@epam.com)
 ## 📄 Licencia
 
 Distribución interna EPAM. No redistribuir sin autorización.
+
+
+## Updated Architecture
+
+![Architecture Diagram](https://strepamkkeast2.blob.core.windows.net/kodekloud-inputs/ChatGPT%20Image%20Jun%2011%2C%202025%2C%2004_17_31%20PM.png?sp=r&st=2025-06-11T22:41:07Z&se=2026-02-28T06:41:07Z&sv=2024-11-04&sr=b&sig=Idl%2FtiH7JbFDdjsfE9gl7QqkuyUywckHvll9vK20JZw%3D)
