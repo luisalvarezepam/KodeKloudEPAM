@@ -15,10 +15,14 @@ export default function App() {
         setRawAuth(data);
         if (data.clientPrincipal) {
           setUser(data.clientPrincipal);
+        } else {
+          // 🔁 Redirige al login si no hay sesión
+          window.location.href = '/.auth/login/aad';
         }
       })
       .catch(err => {
         console.error('❌ Error al consultar /.auth/me:', err);
+        window.location.href = '/.auth/login/aad'; // redirige en error también
       })
       .finally(() => {
         setLoading(false);
@@ -27,10 +31,6 @@ export default function App() {
 
   if (loading) {
     return <p className="text-center p-6">⏳ Verificando autenticación...</p>;
-  }
-
-  if (!user) {
-    return <AuthDebug rawData={rawAuth} />;
   }
 
   return <KodeKloudDashboard user={user} />;
