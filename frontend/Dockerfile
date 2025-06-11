@@ -7,7 +7,7 @@ COPY package*.json ./
 RUN npm install
 
 COPY . .
-RUN npm run build
+RUN npm install && npm run build
 
 # Etapa 2: Servir con NGINX
 FROM nginx:stable-alpine
@@ -18,6 +18,6 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 # Opcional: copia tu archivo nginx.conf si quieres configuración personalizada
 COPY nginx.conf /etc/nginx/nginx.conf
 
-EXPOSE 8080
+EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
