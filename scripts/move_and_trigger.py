@@ -1,46 +1,6 @@
-import os
-import requests
-from azure.identity import DefaultAzureCredential
-from azure.storage.blob import BlobServiceClient
-
-# Config
-STORAGE_URL = os.environ.get("STORAGE_ACCOUNT_URL")
-SOURCE_CONTAINER = "kodekloudfiles"
-DEST_CONTAINER = "kodekloud-inputs"
-BACKUP_FOLDER = "backup"
-TRIGGER_URL = os.environ.get("TRIGGER_URL")
-
-credential = DefaultAzureCredential()
-blob_service_client = BlobServiceClient(account_url=STORAGE_URL, credential=credential)
-
-def move_old_files():
-    dest_client = blob_service_client.get_container_client(DEST_CONTAINER)
-    blobs = list(dest_client.list_blobs())
-
-    for blob in blobs:
-        if blob.name.endswith(".xlsx") or blob.name.endswith(".json"):
-            source_blob = dest_client.get_blob_client(blob.name)
-            backup_blob = dest_client.get_blob_client(f"{BACKUP_FOLDER}/{blob.name}")
-            backup_blob.start_copy_from_url(source_blob.url)
-            source_blob.delete_blob()
-
-def move_new_files():
-    source_client = blob_service_client.get_container_client(SOURCE_CONTAINER)
-    dest_client = blob_service_client.get_container_client(DEST_CONTAINER)
-    required_files = ["activity_leaderboard.xlsx", "KodeKloud2025Admin.xlsx"]
-
-    for filename in required_files:
-        source_blob = source_client.get_blob_client(filename)
-        dest_blob = dest_client.get_blob_client(filename)
-        dest_blob.start_copy_from_url(source_blob.url)
-        source_blob.delete_blob()
-
-def call_trigger():
-    response = requests.get(TRIGGER_URL)
-    print(f"Function response status: {response.status_code}")
-    print(response.text)
+import logging
+from move_and_trigger_core import run_my_logic
 
 if __name__ == "__main__":
-    move_old_files()
-    move_new_files()
-    call_trigger()
+    logging.basicConfig(level=logging.INFO)
+    run_my_logic()
