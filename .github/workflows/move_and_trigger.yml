@@ -18,15 +18,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install azure-identity azure-storage-blob requests
+          pip install azure-storage-blob requests
 
-      - name: Login to Azure
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-    
-      - name: Run Blob Logic and Trigger Function
+      - name: Ejecutar lógica de movimiento y trigger
         env:
-          STORAGE_ACCOUNT_URL: ${{ secrets.STORAGE_ACCOUNT_URL }}
+          STORAGE_CONNECTION_STRING: ${{ secrets.STORAGE_CONNECTION_STRING }}
           TRIGGER_URL: ${{ secrets.TRIGGER_URL }}
-        run: python scripts/move_and_trigger.py
+          CONTAINER_SOURCE: kodekloudfile
+          CONTAINER_INPUTS: kodekloud-inputs
+          ARCHIVE_FOLDER: archive
+        run: python scripts/manual_trigger.py
