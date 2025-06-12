@@ -1,0 +1,29 @@
+name: Move and Trigger Report
+
+on:
+  workflow_dispatch:
+
+jobs:
+  move_and_trigger:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install azure-identity azure-storage-blob requests
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Run Blob Logic and Trigger Function
+        run: python scripts/move_and_trigger.py
