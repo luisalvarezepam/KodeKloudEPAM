@@ -24,6 +24,9 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-
+    
       - name: Run Blob Logic and Trigger Function
+        env:
+          STORAGE_ACCOUNT_URL: ${{ secrets.STORAGE_ACCOUNT_URL }}
+          TRIGGER_URL: ${{ secrets.TRIGGER_URL }}
         run: python scripts/move_and_trigger.py

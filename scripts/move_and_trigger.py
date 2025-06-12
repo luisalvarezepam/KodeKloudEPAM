@@ -4,11 +4,11 @@ from azure.identity import DefaultAzureCredential
 from azure.storage.blob import BlobServiceClient
 
 # Config
-STORAGE_URL = "https://strepamkkeast2.blob.core.windows.net"
+STORAGE_URL = os.environ.get("STORAGE_ACCOUNT_URL")
 SOURCE_CONTAINER = "kodekloudfiles"
 DEST_CONTAINER = "kodekloud-inputs"
 BACKUP_FOLDER = "backup"
-TRIGGER_URL = "https://epamkkgenerator.azurewebsites.net/api/GenerateReport?code=K7rd1y9vc7tF99DktxAC_HuZzHNG_Py_Xz-eOwNY3dQbAzFuIYdn4A=="
+TRIGGER_URL = os.environ.get("TRIGGER_URL")
 
 credential = DefaultAzureCredential()
 blob_service_client = BlobServiceClient(account_url=STORAGE_URL, credential=credential)
