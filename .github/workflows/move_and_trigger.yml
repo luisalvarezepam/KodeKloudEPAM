@@ -24,7 +24,7 @@ jobs:
         env:
           STORAGE_CONNECTION_STRING: ${{ secrets.STORAGE_CONNECTION_STRING }}
           TRIGGER_URL: ${{ secrets.TRIGGER_URL }}
-          CONTAINER_SOURCE: kodekloudfile
+          CONTAINER_SOURCE: kodekloudfiles
           CONTAINER_INPUTS: kodekloud-inputs
           ARCHIVE_FOLDER: archive
         run: python scripts/move_and_trigger.py
