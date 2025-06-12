@@ -27,4 +27,4 @@ jobs:
           CONTAINER_SOURCE: kodekloudfile
           CONTAINER_INPUTS: kodekloud-inputs
           ARCHIVE_FOLDER: archive
-        run: python scripts/manual_trigger.py
+        run: python scripts/move_and_trigger.py
